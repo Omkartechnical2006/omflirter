@@ -19,10 +19,16 @@
                 <span class="logo-emoji">💘</span>
                 <h1>Om The Flirter</h1>
             </div>
-            <button class="add-btn" id="addBtn">
-                <span>+</span>
-                <span class="add-text">Add New</span>
-            </button>
+            <div class="header-actions">
+                <button class="export-btn" id="exportBtn">
+                    <span>📥</span>
+                    <span class="export-text">Export</span>
+                </button>
+                <button class="add-btn" id="addBtn">
+                    <span>+</span>
+                    <span class="add-text">Add New</span>
+                </button>
+            </div>
         </header>
 
         <!-- Tabs Navigation -->
@@ -40,6 +46,12 @@
                 <span class="tab-text">Mix</span>
             </button>
         </nav>
+
+        <!-- Search Bar -->
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search in current category...">
+            <button class="clear-search" id="clearSearch" style="display: none;">✕</button>
+        </div>
 
         <!-- Content Area -->
         <main class="content" id="content">

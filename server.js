@@ -93,6 +93,30 @@ app.delete('/api/items/:id', async (req, res) => {
     }
 });
 
+// Export items to text file
+app.get('/api/export/:category', async (req, res) => {
+    try {
+        const items = await Item.find({ category: req.params.category }).sort({ createdAt: -1 });
+
+        // Create text content
+        let textContent = `Om The Flirter - ${req.params.category.charAt(0).toUpperCase() + req.params.category.slice(1)}\n`;
+        textContent += `Export Date: ${new Date().toLocaleString()}\n`;
+        textContent += `Total Items: ${items.length}\n`;
+        textContent += `${'='.repeat(50)}\n\n`;
+
+        items.forEach((item, index) => {
+            textContent += `${index + 1}. ${item.content}\n\n`;
+        });
+
+        // Set headers for file download
+        res.setHeader('Content-Type', 'text/plain');
+        res.setHeader('Content-Disposition', `attachment; filename="${req.params.category}-${Date.now()}.txt"`);
+        res.send(textContent);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
 // Start Server
 app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);

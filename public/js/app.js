@@ -1,13 +1,18 @@
 // State Management
 let currentCategory = 'flirting';
 let items = [];
+let filteredItems = [];
 let editingItemId = null;
 let deleteItemId = null;
+let searchQuery = '';
 
 // DOM Elements
 const content = document.getElementById('content');
 const tabs = document.querySelectorAll('.tab-btn');
 const addBtn = document.getElementById('addBtn');
+const exportBtn = document.getElementById('exportBtn');
+const searchInput = document.getElementById('searchInput');
+const clearSearch = document.getElementById('clearSearch');
 const modal = document.getElementById('modal');
 const deleteModal = document.getElementById('deleteModal');
 const closeBtn = document.getElementById('closeBtn');
@@ -37,6 +42,13 @@ function attachEventListeners() {
 
     // Add button
     addBtn.addEventListener('click', openAddModal);
+
+    // Export button
+    exportBtn.addEventListener('click', exportItems);
+
+    // Search input
+    searchInput.addEventListener('input', handleSearch);
+    clearSearch.addEventListener('click', clearSearchInput);
 
     // Modal close
     closeBtn.addEventListener('click', closeModal);
@@ -68,6 +80,9 @@ function switchTab(category) {
         }
     });
 
+    // Clear search when switching tabs
+    clearSearchInput();
+
     // Load items for this category
     loadItems(category);
 }
@@ -79,7 +94,7 @@ async function loadItems(category) {
     try {
         const response = await fetch(`/api/items/${category}`);
         items = await response.json();
-        renderItems();
+        applySearch(); // Apply current search filter
     } catch (error) {
         console.error('Error loading items:', error);
         content.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Error loading items</p>';
@@ -88,18 +103,23 @@ async function loadItems(category) {
 
 // Render Items
 function renderItems() {
-    if (items.length === 0) {
-        content.innerHTML = `
-            <div class="empty-state">
+    if (filteredItems.length === 0) {
+        const message = searchQuery
+            ? `<div class="empty-state">
+                <div class="empty-emoji">🔍</div>
+                <h2>No results found</h2>
+                <p>Try a different search term or clear the search to see all items</p>
+               </div>`
+            : `<div class="empty-state">
                 <div class="empty-emoji">📝</div>
                 <h2>No items yet</h2>
                 <p>Click the "Add New" button to create your first item!</p>
-            </div>
-        `;
+               </div>`;
+        content.innerHTML = message;
         return;
     }
 
-    const itemsHTML = items.map(item => `
+    const itemsHTML = filteredItems.map(item => `
         <div class="item-card">
             <div class="item-content">${escapeHtml(item.content)}</div>
             <div class="item-actions">
@@ -113,7 +133,13 @@ function renderItems() {
         </div>
     `).join('');
 
-    content.innerHTML = `<div class="items-grid">${itemsHTML}</div>`;
+    const searchSummary = searchQuery
+        ? `<p style="text-align: center; color: var(--text-secondary); margin-bottom: 20px; font-size: 0.95rem;">
+            Showing ${filteredItems.length} of ${items.length} items
+           </p>`
+        : '';
+
+    content.innerHTML = searchSummary + `<div class="items-grid">${itemsHTML}</div>`;
 }
 
 // Modal Functions
@@ -208,6 +234,44 @@ async function deleteItem() {
         console.error('Error deleting item:', error);
         alert('Error deleting item. Please try again.');
     }
+}
+
+// Search Functions
+function handleSearch(e) {
+    searchQuery = e.target.value.toLowerCase().trim();
+
+    // Show/hide clear button
+    if (searchQuery) {
+        clearSearch.style.display = 'flex';
+    } else {
+        clearSearch.style.display = 'none';
+    }
+
+    applySearch();
+}
+
+function applySearch() {
+    if (!searchQuery) {
+        filteredItems = [...items];
+    } else {
+        filteredItems = items.filter(item =>
+            item.content.toLowerCase().includes(searchQuery)
+        );
+    }
+    renderItems();
+}
+
+function clearSearchInput() {
+    searchInput.value = '';
+    searchQuery = '';
+    clearSearch.style.display = 'none';
+    applySearch();
+}
+
+// Export Items
+function exportItems() {
+    // Navigate to export endpoint
+    window.location.href = `/api/export/${currentCategory}`;
 }
 
 // Utility Functions

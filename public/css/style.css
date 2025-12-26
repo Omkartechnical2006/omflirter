@@ -139,6 +139,37 @@ body::before {
     background-clip: text;
 }
 
+.header-actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.export-btn {
+    background: var(--gradient-2);
+    border: none;
+    padding: 15px 30px;
+    border-radius: 50px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.export-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: var(--shadow-lg);
+}
+
+.export-btn:active {
+    transform: translateY(0) scale(0.98);
+}
+
 .add-btn {
     background: var(--gradient-1);
     border: none;
@@ -225,6 +256,62 @@ body::before {
 
 .tab-emoji {
     font-size: 1.5rem;
+}
+
+/* Search Bar */
+.search-container {
+    position: relative;
+    margin: 20px 0;
+    animation: fadeIn 0.6s ease-out;
+}
+
+.search-input {
+    width: 100%;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 15px;
+    padding: 18px 50px 18px 20px;
+    color: var(--text-primary);
+    font-size: 1.05rem;
+    font-family: 'Outfit', sans-serif;
+    transition: all 0.3s ease;
+}
+
+.search-input::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.7;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.clear-search {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--primary);
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.clear-search:hover {
+    transform: translateY(-50%) scale(1.1);
+    background: var(--primary-dark);
 }
 
 /* Content Area */
@@ -325,6 +412,7 @@ body::before {
     color: var(--text-primary);
     margin-bottom: 15px;
     word-wrap: break-word;
+    white-space: pre-wrap;
 }
 
 .item-actions {
@@ -565,7 +653,13 @@ body::before {
         font-size: 1rem;
     }
 
-    .add-text {
+    .export-btn {
+        padding: 12px 20px;
+        font-size: 1rem;
+    }
+
+    .add-text,
+    .export-text {
         display: none;
     }
 
