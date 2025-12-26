@@ -340,24 +340,16 @@ body::before {
 }
 
 .item-card {
-    /* Fixed Dimensions */
-    width: 350px;         
-    height: 450px;        
-    
-    /* Enable scrolling in both directions */
-    overflow: auto;       /* This handles both X and Y automatically */
-
-    /* Your Existing Styles */
     background: var(--glass-bg);
     backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border);
     border-radius: 20px;
     padding: 25px;
     position: relative;
+    overflow: scroll;
     transition: all 0.3s ease;
     animation: scaleIn 0.4s ease-out backwards;
 }
-
 .item-card:nth-child(1) {
     animation-delay: 0.1s;
 }
@@ -711,3 +703,4 @@ body::before {
     }
 
 }
+
