@@ -350,6 +350,7 @@ body::before {
     transition: all 0.3s ease;
     animation: scaleIn 0.4s ease-out backwards;
 }
+
 .item-card:nth-child(1) {
     animation-delay: 0.1s;
 }
@@ -452,6 +453,40 @@ body::before {
     background: var(--primary);
     color: white;
     transform: scale(1.05);
+}
+
+/* Load More Button */
+.load-more-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    animation: fadeIn 0.6s ease-out;
+}
+
+.btn-load-more {
+    background: var(--gradient-2);
+    border: none;
+    padding: 18px 40px;
+    border-radius: 50px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-load-more:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-load-more:active {
+    transform: translateY(0) scale(0.98);
 }
 
 .empty-state {
@@ -701,7 +736,4 @@ body::before {
     to {
         transform: rotate(360deg);
     }
-
 }
-
-

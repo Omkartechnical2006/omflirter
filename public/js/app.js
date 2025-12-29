@@ -2,9 +2,12 @@
 let currentCategory = 'flirting';
 let items = [];
 let filteredItems = [];
+let displayedItems = [];
 let editingItemId = null;
 let deleteItemId = null;
 let searchQuery = '';
+let itemsPerPage = 10;
+let currentPage = 1;
 
 // DOM Elements
 const content = document.getElementById('content');
@@ -83,6 +86,9 @@ function switchTab(category) {
     // Clear search when switching tabs
     clearSearchInput();
 
+    // Reset pagination
+    currentPage = 1;
+
     // Load items for this category
     loadItems(category);
 }
@@ -119,7 +125,12 @@ function renderItems() {
         return;
     }
 
-    const itemsHTML = filteredItems.map(item => `
+    // Calculate items to display based on current page
+    const itemsToShow = currentPage * itemsPerPage;
+    displayedItems = filteredItems.slice(0, itemsToShow);
+    const hasMore = displayedItems.length < filteredItems.length;
+
+    const itemsHTML = displayedItems.map(item => `
         <div class="item-card">
             <div class="item-content">${escapeHtml(item.content)}</div>
             <div class="item-actions">
@@ -135,11 +146,21 @@ function renderItems() {
 
     const searchSummary = searchQuery
         ? `<p style="text-align: center; color: var(--text-secondary); margin-bottom: 20px; font-size: 0.95rem;">
-            Showing ${filteredItems.length} of ${items.length} items
+            Showing ${displayedItems.length} of ${filteredItems.length} items (Total: ${items.length})
            </p>`
+        : `<p style="text-align: center; color: var(--text-secondary); margin-bottom: 20px; font-size: 0.95rem;">
+            Showing ${displayedItems.length} of ${filteredItems.length} items
+           </p>`;
+
+    const loadMoreButton = hasMore
+        ? `<div class="load-more-container">
+            <button class="btn-load-more" onclick="loadMore()">
+                📄 Load More (${filteredItems.length - displayedItems.length} remaining)
+            </button>
+           </div>`
         : '';
 
-    content.innerHTML = searchSummary + `<div class="items-grid">${itemsHTML}</div>`;
+    content.innerHTML = searchSummary + `<div class="items-grid">${itemsHTML}</div>` + loadMoreButton;
 }
 
 // Modal Functions
@@ -258,6 +279,8 @@ function applySearch() {
             item.content.toLowerCase().includes(searchQuery)
         );
     }
+    // Reset pagination when search changes
+    currentPage = 1;
     renderItems();
 }
 
@@ -265,7 +288,22 @@ function clearSearchInput() {
     searchInput.value = '';
     searchQuery = '';
     clearSearch.style.display = 'none';
+    currentPage = 1; // Reset pagination
     applySearch();
+}
+
+// Load More Function
+function loadMore() {
+    currentPage++;
+    renderItems();
+    // Smooth scroll to first new item
+    setTimeout(() => {
+        const cards = document.querySelectorAll('.item-card');
+        const firstNewCard = cards[(currentPage - 1) * itemsPerPage];
+        if (firstNewCard) {
+            firstNewCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    }, 100);
 }
 
 // Export Items
