@@ -26,6 +26,9 @@ const itemContent = document.getElementById('itemContent');
 const itemId = document.getElementById('itemId');
 const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
 const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+const editPasswordContainer = document.getElementById('editPasswordContainer');
+const editPassword = document.getElementById('editPassword');
+const deletePassword = document.getElementById('deletePassword');
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -169,6 +172,12 @@ function openAddModal() {
     modalTitle.textContent = 'Add New Item';
     itemContent.value = '';
     itemId.value = '';
+
+    // Hide password field for Adding
+    editPasswordContainer.style.display = 'none';
+    editPassword.value = '';
+    editPassword.required = false;
+
     modal.classList.add('active');
     itemContent.focus();
 }
@@ -181,6 +190,12 @@ function editItem(id) {
     modalTitle.textContent = 'Edit Item';
     itemContent.value = item.content;
     itemId.value = id;
+
+    // Show password field for Editing
+    editPasswordContainer.style.display = 'block';
+    editPassword.value = '';
+    editPassword.required = true;
+
     modal.classList.add('active');
     itemContent.focus();
 }
@@ -189,16 +204,20 @@ function closeModal() {
     modal.classList.remove('active');
     itemForm.reset();
     editingItemId = null;
+    editPassword.value = ''; // Clear password
 }
 
 function openDeleteModal(id) {
     deleteItemId = id;
+    deletePassword.value = ''; // Clear previous password
     deleteModal.classList.add('active');
+    deletePassword.focus();
 }
 
 function closeDeleteModal() {
     deleteModal.classList.remove('active');
     deleteItemId = null;
+    deletePassword.value = '';
 }
 
 // Form Submission
@@ -211,16 +230,25 @@ async function handleFormSubmit(e) {
     try {
         if (editingItemId) {
             // Update existing item
-            await fetch(`/api/items/${editingItemId}`, {
+            const password = editPassword.value;
+            const response = await fetch(`/api/items/${editingItemId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
+                    'x-admin-password': password
                 },
                 body: JSON.stringify({ content }),
             });
+
+            if (response.status === 401) {
+                alert('❌ Incorrect Admin Password! Cannot update item.');
+                return;
+            }
+            if (!response.ok) throw new Error('Update failed');
+
         } else {
-            // Create new item
-            await fetch('/api/items', {
+            // Create new item (No password needed)
+            const response = await fetch('/api/items', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -230,6 +258,8 @@ async function handleFormSubmit(e) {
                     category: currentCategory,
                 }),
             });
+
+            if (!response.ok) throw new Error('Create failed');
         }
 
         closeModal();
@@ -244,10 +274,25 @@ async function handleFormSubmit(e) {
 async function deleteItem() {
     if (!deleteItemId) return;
 
+    const password = deletePassword.value;
+    if (!password) {
+        alert('Please enter the Admin Password');
+        return;
+    }
+
     try {
-        await fetch(`/api/items/${deleteItemId}`, {
+        const response = await fetch(`/api/items/${deleteItemId}`, {
             method: 'DELETE',
+            headers: {
+                'x-admin-password': password
+            }
         });
+
+        if (response.status === 401) {
+            alert('❌ Incorrect Admin Password! Cannot delete item.');
+            return;
+        }
+        if (!response.ok) throw new Error('Delete failed');
 
         closeDeleteModal();
         loadItems(currentCategory);

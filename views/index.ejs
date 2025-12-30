@@ -67,7 +67,22 @@
                 </div>
                 <form id="itemForm">
                     <input type="hidden" id="itemId">
-                    <textarea id="itemContent" placeholder="Enter your text here..." required rows="5"></textarea>
+                    <textarea 
+                        id="itemContent" 
+                        placeholder="Enter your text here..." 
+                        required
+                        rows="5"
+                    ></textarea>
+                    
+                    <div id="editPasswordContainer" style="display: none; margin-top: 15px;">
+                        <input 
+                            type="password" 
+                            id="editPassword" 
+                            class="password-input" 
+                            placeholder="Enter Admin Password to Edit"
+                        >
+                    </div>
+
                     <div class="form-actions">
                         <button type="button" class="btn-cancel" id="cancelBtn">Cancel</button>
                         <button type="submit" class="btn-submit" id="submitBtn">Save</button>
@@ -81,6 +96,16 @@
             <div class="modal-content delete-modal">
                 <h2>Delete Item?</h2>
                 <p>Are you sure you want to delete this item? This action cannot be undone.</p>
+                
+                <div style="margin-bottom: 20px;">
+                    <input 
+                        type="password" 
+                        id="deletePassword" 
+                        class="password-input" 
+                        placeholder="Enter Admin Password to Delete"
+                    >
+                </div>
+
                 <div class="form-actions">
                     <button type="button" class="btn-cancel" id="cancelDeleteBtn">Cancel</button>
                     <button type="button" class="btn-delete" id="confirmDeleteBtn">Delete</button>

@@ -71,6 +71,14 @@ app.post('/api/items', async (req, res) => {
 
 // Update item
 app.put('/api/items/:id', async (req, res) => {
+    // Check Password
+    const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+    const userPassword = req.headers['x-admin-password'];
+
+    if (userPassword !== adminPassword) {
+        return res.status(401).json({ error: 'Incorrect password' });
+    }
+
     try {
         const updatedItem = await Item.findByIdAndUpdate(
             req.params.id,
@@ -85,6 +93,14 @@ app.put('/api/items/:id', async (req, res) => {
 
 // Delete item
 app.delete('/api/items/:id', async (req, res) => {
+    // Check Password
+    const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+    const userPassword = req.headers['x-admin-password'];
+
+    if (userPassword !== adminPassword) {
+        return res.status(401).json({ error: 'Incorrect password' });
+    }
+
     try {
         await Item.findByIdAndDelete(req.params.id);
         res.json({ message: 'Item deleted successfully' });
